@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}
+"Lista zakupów | {{list_name}}"
+{% endblock %}
+
+
+{% block content %}
+<h1>Lista zakupów</h1>
+<h2>{{list_name}}</h2>
+
+{% if is_owner %}
+
+{% else %}
+    <p>Właściciel: {{owner_nick}}</p>
+{% endif %}
+<p>Utworzono: {{create_date}} </p>
+<table>
+{% for prod in products %}
+    <tr>
+        
+        <td>{{prod.item_description}}</td><td> <form method="POST" action="{% url "change_added_to_cart" user_profile_url_txt list_id %}"> {% csrf_token %} <input type="hidden" name="item_id" value="{{prod.id}}"/> <input type="submit" value="{% if prod.in_cart %}wyjmij z koszyka{% else %}włóż do koszyka{% endif %}"/> </form></td> <td><form method="POST" action="{% url "remove_item_from_list" user_profile_url_txt list_id %}"> {% csrf_token %} <input type="hidden" name="item_id" value="{{prod.id}}"/> <input type="submit" value="Usuń"/> </form></td>
+        
+    </td>
+{% endfor %}
+</table>
+<form method="POST" action="{{add_new_url}}">
+{% csrf_token %}
+<input type="hidden" name="list_id" value="{{list_id}}"/>
+<label for="new_product_name">Nazwa produktu: </label>
+<input type="text" id="new_product_name" name="new_product_name"/>
+<input type="submit" value="Dodaj">
+</form>
+<a href="{% url "user_profile_page" user_profile_url_txt %}">powrót</a>
+{% if is_owner %}
+<h2>Edytujący</h2>
+<table>
+{% for editor in editors %}
+<tr>
+<td>{{editor.nick}}</td><td><form method="POST" action="{% url 'remove_user_from_list_editors' user_profile_url_txt list_id %}"> <input type="hidden" name="editor_id" value="{{editor.id}}"/> <input type="hidden" name="list_id" value="{{list_id}}"/> <input type="submit" value="usuń"/> </form></td>
+</tr>
+{% endfor %}
+<form method="POST" action="{% url 'invite_to_list_using_hash'  user_profile_url_txt list_id %}">
+{% csrf_token %}
+<label for="invited_user_hash">Podaj hash zapraszanej osoby</label>
+<input type="hidden" name="list_id" value="{{list_id}}"/>
+<input type="text" name="invited_user_hash" id="invited_user_hash" />
+<input type="submit" value="zaproś"/> 
+</form>
+</table>
+<form method="POST" action="{% url "delete_list" user_profile_url_txt list_id %}">
+    {% csrf_token %}
+    <input type="hidden" name="list_id" value="{{list_id}}"/>
+    <input type="submit" value="skasuj listę" />
+</form>
+{% endif%}
+{% if error_data %}
+{%if error_data.error_flag %}
+    <p>{{error_data.error_msg}}</p>
+{% endif %}
+{% endif %}
+{% endblock %}

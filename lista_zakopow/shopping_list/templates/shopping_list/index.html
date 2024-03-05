@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}
+Lista zakupów
+{% endblock %}
+
+{% block content %}
+<div>
+    <h1>Lista zakupów</h1>
+    {% if error_flag %}
+        <p>{{error_msg}}</p>
+    {% endif %}
+    <h2>Logowanie</h2>
+    <form method="post" action="{% url 'login_user' %}">
+        {% csrf_token%}
+        <label for="user_login">Podaj login</label>
+        <input type="text" name="user_login" id="user_login">
+        <label for="user_password_1">Podaj hasło</label>
+        <input type="text" name="user_password_1" id="user_password_1">
+        <input type="submit">
+    </form>
+    <br>
+    <h2>Rejestracja</h2>
+    <form method="post" action="{% url 'register_user' %}">
+        {% csrf_token%}
+        <label for="user_login">Login: </label>
+        <input type="text" name="user_login" id="user_login">
+        <label for="user_password_1">hasło: </label>
+        <input type="text" name="user_password_1" id="user_password_1">
+        <label for="user_password_2">Powtórz hasło: </label>
+        <input type="text" name="user_password_2" id="user_password_2">
+        <label for="user_nick">Nick: </label>
+        <input type="text" name="user_nick" id="user_nick">
+        <input type="submit">
+    </form>
+
+
+</div>
+<!--
+<div><h1>Lista zakupów</h1></div>
+
+<div>
+    <table>
+        {% if products_count != 0 %}
+            <tr><td>nazwa</td><td>w koszyku</td><td></td></tr>
+        {% for product in products %}
+
+        <tr>
+            <td> {{product.description}}</td><td> {% if product.bought == True %} tak {% endif %} {% if product.bought == False %} nie {% endif %}</td>
+            <td><form method="post" action="changebought/"> 
+                    {% csrf_token %}
+                    <input type="hidden" name="productid" id="product_add_remove_from_cart_id_{{product.id}}" value="{{product.id}}">
+                    {% if product.bought == True %}
+                        <button class="button-take-out">Wyjmij z koszyka</button>
+                    {% endif %}
+                    {% if product.bought == False %}
+                        <button class="button-put-in">Dodaj do koszyka</button>
+                    {% endif %}
+            </form>
+            <form method="post" action="delete/">
+                {% csrf_token %}
+                <input type="hidden" name="productid" id="product_delete_id_{{product.id}}" value="{{product.id}}">
+                <button>Usuń</button>
+            </form>
+            </td>
+        </tr>
+
+        {% endfor %}
+        {% endif %}
+    </table>
+    <form method="POST" action="addnew/">
+        {% csrf_token %}
+        <label for="new-product-description">Dodaj produkt</label><input type="text" name="new-product-description" id="new-product-description"></input>
+        <button>Dodaj nowy</button>
+    </form>
+</div>
+
+-->
+{% endblock %}
+
+
+
+
+
