@@ -1,7 +1,12 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}
 Lista zakupów
+{% endblock %}
+
+{% block css_styles %}
+<link rel="stylesheet" href="{% static 'base.css' %}">
+<link rel="stylesheet" href="{% static 'shopping_list/styles.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -33,7 +38,7 @@ Lista zakupów
         <input type="text" name="user_nick" id="user_nick">
         <input type="submit">
     </form>
-
+    <a href="www.onet.pl">onet</a>
 
 </div>
 <!--

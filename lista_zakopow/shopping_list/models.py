@@ -22,9 +22,12 @@ class EditingUser(models.Model):
     normalUser = models.ForeignKey(NormalUser, on_delete=models.CASCADE)
     shoppingList = models.ForeignKey(ShoppingList, on_delete= models.CASCADE)
     inviteAccepted = models.BooleanField(null=False, default = False)
-
+    def __str__(self):
+        return str(self.normalUser) + " " + str(self.shoppingList)
 
 class Product(models.Model):
     description = models.CharField(max_length=300, blank = False, null = False)
     added_to_cart = models.BooleanField( default = False )
     product_list = models.ForeignKey(ShoppingList, related_name="listproducts", on_delete=models.CASCADE, null=True)
+    def __str__(self):
+        return self.description
