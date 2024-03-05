@@ -4,11 +4,15 @@ from django.urls import reverse
 from django.views.generic import View
 from django.utils.text import slugify
 from django.db.models import Q
+from django.db import transaction
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.hashers import check_password
 from . import models
 from random import randint
 import hashlib
 import uuid 
-
+from django.contrib.auth.models import User 
 
 def hashText(text):
     """
@@ -27,7 +31,7 @@ def matchHashedText(hashedText, providedText):
 def index(httprequest):
     if "user_login" in httprequest.session:
         user_login = httprequest.session["user_login"]
-        user_list = models.NormalUser.objects.filter(login = user_login)
+        user_list = get_user_matching_to_login(user_login)
         if len(user_list) > 0:
             user = user_list[0]
             user_url = get_user_profile_url(user)
@@ -56,7 +60,7 @@ def load_user_profile(httprequest, user_profile_url_txt):
     if "user_login" in httprequest.session:
         print("load_user_profile view - passed check if user_login in request.session")
         user_login = httprequest.session["user_login"]
-        user_list = models.NormalUser.objects.filter(login = user_login)
+        user_list = get_user_matching_to_login(user_login)
         if len(user_list) > 0:
             print("load_user_profile view - passed check if user with user_login exists")
             user = user_list[0]
@@ -91,7 +95,7 @@ def logout_user(httprequest, user_profile_url_txt):
         if "user_login" in httprequest.session:
             print("logout_user - pass user_login in session")
             user_login = httprequest.session["user_login"]
-            user_list = models.NormalUser.objects.filter(login = user_login)
+            user_list = get_user_matching_to_login(user_login)
             if len(user_list) > 0:
                 print("kukuryku")
                 del httprequest.session
@@ -298,9 +302,10 @@ def change_added_to_cart(httprequest, user_profile_url_txt, list_id):
 
 
 def get_user_matching_to_login(user_login):
-    list_of_users_with_matching_login = models.NormalUser.objects.filter(login = user_login)
+    #list_of_users_with_matching_login = models.NormalUser.objects.filter(login = user_login)
+    list_of_users_with_matching_login = User.objects.filter(username=user_login)
     if len(list_of_users_with_matching_login) > 0:
-        return list_of_users_with_matching_login[0]
+        return list_of_users_with_matching_login[0].normaluser
     return None
 
 
@@ -310,8 +315,8 @@ def prepare_user_login(login_passed_from_user):
     login_passed_from_user = login_passed_from_user.lower()
     return slugify(login_passed_from_user)
 
-def validate_password(password):
-    return True
+def my_validate_password(password):
+    return validate_password(password)
 
 def generate_user_hash(user_nick):
     random_seed = randint(0, 2147483640)
@@ -333,12 +338,14 @@ def register_user(httprequest):
     print("register_user - method: ", httprequest.method)
     if httprequest.method == "POST":
         new_user_login = httprequest.POST["user_login"]
+        new_user_email = httprequest.POST["user_email"]
         new_user_password_1 = httprequest.POST["user_password_1"]
         new_user_password_2 = httprequest.POST["user_password_2"]
         new_user_nick = httprequest.POST["user_nick"]
         new_user_login = prepare_user_login(new_user_login)
 
-        matching_existing_login_list = models.NormalUser.objects.filter(login = new_user_login)
+        #matching_existing_login_list = models.NormalUser.objects.filter(login = new_user_login)
+        matching_existing_login_list = User.objects.filter(username=new_user_login)
         if len(matching_existing_login_list) > 0 or len(new_user_login) == 0:
             #httprequest.GET["error_flag"] = True
             #httprequest.GET["error_msg"] = "Podaj inny i nie pusty login"
@@ -346,7 +353,7 @@ def register_user(httprequest):
             #return HttpResponseRedirect(reverse("main-page"), kwargs={"error_flag" : True, "error_msg" : "Podaj inny i nie pusty login"})
             return render(httprequest, "shopping_list/index.html", context= {"error_flag" : True, "error_msg" : "Podaj inny i nie pusty login"})
 
-        if not validate_password(new_user_password_1):
+        if not my_validate_password(new_user_password_1):
             #return render(httprequest, reverse("main-page"), {"error_flag" : True, "error_msg" : "Hasło nie jest wystarczająco silne"})
             #return HttpResponseRedirect(reverse("main-page"), kwargs={"error_flag" : True, "error_msg" : "Hasło nie jest wystarczająco silne"})
             #httprequest.GET["error_flag"] = True
@@ -358,6 +365,9 @@ def register_user(httprequest):
             #httprequest.GET["error_flag"] = True
             #httprequest.GET["error_msg"] = "Podane hasła się różnią"
             return render(httprequest, "shopping_list/index.html", context= {"error_flag" : True, "error_msg" : "Podane hasła się różnią"})
+        if len(new_user_email) == 0:
+            return render(httprequest, "shopping_list/index.html", context= {"error_flag" : True, "error_msg" : "Podaj email"})
+
         if len(new_user_nick) == 0:
             #return render(httprequest, reverse("main-page"), {"error_flag" : True, "error_msg" : "Podaj nick"})
             #return HttpResponseRedirect(reverse("main-page"), kwargs={"error_flag" : True, "error_msg" : "Podaj nick"})
@@ -366,14 +376,18 @@ def register_user(httprequest):
             return render(httprequest, "shopping_list/index.html", context= {"error_flag" : True, "error_msg" : "Podaj nick"})
         password_hashed = hashText(new_user_password_1)
         user_hash = generate_user_hash(new_user_nick)
-        new_user = models.NormalUser(nick=new_user_nick, login=new_user_login, password=password_hashed, invitehash=user_hash)
-        new_user.save()
+        #new_user = models.NormalUser(nick=new_user_nick, login=new_user_login, password=password_hashed, invitehash=user_hash)
+        with transaction.atomic():
+            new_user = User(username = new_user_login, password= new_user_password_1, email = new_user_email, is_staff=False)
+            new_user.save()
+            new_user_profile = models.NormalUser(user = new_user, nick = new_user_nick, invitehash = user_hash)
+            new_user_profile.save()
         return login_user(httprequest)
     return HttpResponseRedirect( reverse("main-page"))
 
 
 def get_user_profile_url(user):
-    return user.login
+    return user.normaluser.login
 
 
 def login_user(httprequest):
@@ -382,17 +396,24 @@ def login_user(httprequest):
         print("login_user view - enter 1st if")
         user_login = prepare_user_login( httprequest.POST["user_login"] )
         user_password = httprequest.POST["user_password_1"]
-        list_of_users_with_matching_login = models.NormalUser.objects.filter(login = user_login)
+        #list_of_users_with_matching_login = models.NormalUser.objects.filter(login = user_login)
+        list_of_users_with_matching_login = User.objects.filter(username = user_login)
         if len(list_of_users_with_matching_login) == 0:
             return render(httprequest, "shopping_list/index.html", {"error_flag" : True, "error_msg" : "Niepoprawny login lub hasło"})
         matching_user_password = list_of_users_with_matching_login[0].password
-        password_matching_to_hash = matchHashedText(matching_user_password, user_password)
+        # password_matching_to_hash = matchHashedText(matching_user_password, user_password)
+        password_matching_to_hash = check_password(user_password, matching_user_password)
         if not password_matching_to_hash:
             return render(httprequest, "shopping_list/index.html", {"error_flag" : True, "error_msg" : "Niepoprawny login lub hasło"})
-        httprequest.session["user_login"] = list_of_users_with_matching_login[0].login
-        user_url = get_user_profile_url(list_of_users_with_matching_login[0])
-        print("login_user view before green path redirect")
-        return HttpResponseRedirect( reverse("user_profile_page", args=(user_url,)))
+        
+        user = authenticate(httprequest, username = user_login, password = user_password)
+        if user:
+            login(httprequest, user)
+            httprequest.session["user_login"] = list_of_users_with_matching_login[0].login
+            # user_url = get_user_profile_url(list_of_users_with_matching_login[0])
+            user_url = get_user_profile_url(list_of_users_with_matching_login[0])
+            print("login_user view before green path redirect")
+            return HttpResponseRedirect( reverse("user_profile_page", args=(user_url,)))
     return HttpResponseRedirect( reverse("main-page"))
 
 
