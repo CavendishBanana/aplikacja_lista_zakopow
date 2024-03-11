@@ -5,17 +5,21 @@ Lista zakupowa | {{user_data.nick}}
 {% endblock %}
 
 {% block content %}
+<h1>Moje listy zakupów</h1>
+<!--
 <h1>Moje dane</h1>
 <p>nick: {{user_data.nick}}, hash: {{user_data.user_hash}}</p>
-<h1>Moje listy zakupów</h1>
+
 <form method="POST" action="{% url 'logoutuser' user_data.user_profile_url_txt %}">
     {% csrf_token %}
     <input type="submit" value="wyloguj"/>
 </form>
+-->
+{% include "shopping_list/includes/account_snippet.html" with user_info_nick=user_data.nick user_info_hash=user_data.user_hash user_info_user_profile_url_txt=user_data.user_profile_url_txt %}
 <h2>Utwórz nową listę</h2> 
 <form method = "POST" action="{% url 'create_new_list' user_data.user_profile_url_txt %}">
     {% csrf_token %}
-<!-- <input type="hidden" value="{{user_data.user_login}}" name="user_login" id="user_login"/> -->
+
 <label for="new_list_name">nazwa: </label>
 <input type="text" name="new_list_name" id="new_list_name">
 <input type="submit" value="utwórz">
@@ -41,7 +45,10 @@ Lista zakupowa | {{user_data.nick}}
 <table>    
 <tr><td>lista</td><td>właściciel (hash)</td><td>zaakceptuj</td></tr>
 {% for invite in invites_data %}
-    <tr><td>{{invite.list_name}}</td><td>{{invite.list_owner}} ({{invite.owner_hash}})</td><td><form method="POST" action="{% url 'accept_invite' user_data.user_profile_url_txt %}"> {% csrf_token %}<input type="hidden" name="list_id" value="{{invite.list_id}}"/><input type="submit" value="zaakceptuj" /></form></td></tr>
+    <tr><td>{{invite.list_name}}</td><td>{{invite.list_owner}} ({{invite.owner_hash}})</td>
+        <td><form method="POST" action="{% url 'accept_invite' user_data.user_profile_url_txt %}"> {% csrf_token %}<input type="hidden" name="list_id" value="{{invite.list_id}}"/><input type="submit" value="zaakceptuj" />
+        <td><form method="POST" action="{% url 'reject_invite' user_data.user_profile_url_txt %}"> {% csrf_token %}<input type="hidden" name="list_id" value="{{invite.list_id}}"/><input type="submit" value="odrzuć" /></form></td>
+        </form></td></tr>
 {% endfor %}
 </table>
 {% else %}

@@ -7,6 +7,7 @@
 
 {% block content %}
 <h1>Lista zakupów</h1>
+{% include "shopping_list/includes/account_snippet.html" with user_info_nick=user_nick user_info_hash=user_hash user_info_user_profile_url_txt=user_profile_url_txt list_id=list_id %}
 <h2>{{list_name}}</h2>
 
 {% if is_owner %}
@@ -35,11 +36,37 @@
 {% if is_owner %}
 <h2>Edytujący</h2>
 <table>
+<tr><td>nick</td><td>hash</td></tr>
 {% for editor in editors %}
 <tr>
-<td>{{editor.nick}}</td><td><form method="POST" action="{% url 'remove_user_from_list_editors' user_profile_url_txt list_id %}"> <input type="hidden" name="editor_id" value="{{editor.id}}"/> <input type="hidden" name="list_id" value="{{list_id}}"/> <input type="submit" value="usuń"/> </form></td>
+<td>{{editor.nick}}</td><td>{{editor.invitehash}}</td>
+<td>
+    <form method="POST" action="{% url 'remove_user_from_list_editors' user_profile_url_txt list_id %}"> 
+        {% csrf_token %}
+         <input type="hidden" name="editor_id" value="{{editor.id}}"/> 
+         <input type="hidden" name="list_id" value="{{list_id}}"/> 
+         <input type="submit" value="usuń"/> 
+        </form>
+    </td>
 </tr>
 {% endfor %}
+<h2>Zaproszeni</h2>
+<table>
+<tr><td>nick</td><td>hash</td></tr>
+{% for invitee in invitees %}
+<tr>
+<td>{{invitee.nick}}</td><td>{{invitee.invitehash}}</td>
+<td>
+    <form method = "POST" action ="{% url 'cancel_invite' user_profile_url_txt list_id %}">
+        {% csrf_token %}
+        <input type="hidden" name="list_id" value="{{list_id}}">
+        <input type="hidden" name="user_hash" value="{{invitee.invitehash}}">
+        <input type="submit" value="Anuluj zaproszenie">
+    </form>
+</td>
+</tr>
+{% endfor %}
+</table>
 <form method="POST" action="{% url 'invite_to_list_using_hash'  user_profile_url_txt list_id %}">
 {% csrf_token %}
 <label for="invited_user_hash">Podaj hash zapraszanej osoby</label>
@@ -52,6 +79,21 @@
     {% csrf_token %}
     <input type="hidden" name="list_id" value="{{list_id}}"/>
     <input type="submit" value="skasuj listę" />
+</form>
+{% else %}
+<table>
+    <tr><td>Edytujący</td></tr>
+    <tr><td>{{owner_nick}}</td></tr>
+    {% for editor in editors %}
+    <tr>
+    <td>{{editor.nick}}</td>
+    </tr>
+    {% endfor %}
+</table>
+<form method="POST" action="{% url 'leave_list' user_profile_url_txt list_id %}">
+    {% csrf_token %}
+    <input type="hidden" name="list_id" value="{{list_id}}"/>
+    <input type="submit" value="Opuść edytujących listę" />
 </form>
 {% endif%}
 {% if error_data %}

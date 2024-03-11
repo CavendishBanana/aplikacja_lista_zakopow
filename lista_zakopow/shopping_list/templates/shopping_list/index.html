@@ -15,32 +15,35 @@ Lista zakupów
     {% if error_flag %}
         <p>{{error_msg}}</p>
     {% endif %}
-    <h2>Logowanie</h2>
-    <form method="post" action="{% url 'login_user' %}">
+    <h2>{%block login_title %}Logowanie{% endblock %}</h2>
+    {% block form_tag_info %}
+    <form method="POST" action="{% url 'login_user' %}">
+    {% endblock %}
         {% csrf_token%}
         <label for="user_login">Podaj login</label>
         <input type="text" name="user_login" id="user_login">
         <label for="user_password_1">Podaj hasło</label>
-        <input type="text" name="user_password_1" id="user_password_1">
+        <input type="password" name="user_password_1" id="user_password_1">
         <input type="submit">
     </form>
+    {% block registration %}
     <br>
     <h2>Rejestracja</h2>
-    <form method="post" action="{% url 'register_user' %}">
+    <form method="POST" action="{% url 'register_user' %}">
         {% csrf_token%}
         <label for="user_login">Login: </label>
         <input type="text" name="user_login" id="user_login">
         <label for="user_email">email: </label>
         <input type="text" name="user_email" id="user_email">
         <label for="user_password_1">hasło: </label>
-        <input type="text" name="user_password_1" id="user_password_1">
+        <input type="password" name="user_password_1" id="user_password_1">
         <label for="user_password_2">Powtórz hasło: </label>
-        <input type="text" name="user_password_2" id="user_password_2">
+        <input type="password" name="user_password_2" id="user_password_2">
         <label for="user_nick">Nick: </label>
         <input type="text" name="user_nick" id="user_nick">
         <input type="submit">
     </form>
-    <a href="www.onet.pl">onet</a>
+    {% endblock %}
 
 </div>
 <!--
