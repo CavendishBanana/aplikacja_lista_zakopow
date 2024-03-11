@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}
+Lista zakupów | ustawienia {{user_obj.nick}}
+{% endblock %}
+
+{% block content %}
+<div>
+<h1>Lista zakupów</h1>
+{% if error_flag %}
+    <p>{{error_msg}}</p>
+{% endif %}
+{% if success_flag %}
+    <p>{{success_msg}}</p>
+{% endif %}
+<h2>Ustawienia mojego profilu</h2>
+{%if list_id %}
+    <a href="{% url 'list_page' user_profile_url_txt list_id%}">powrót</a>
+{% else %}
+    <a href="{% url 'user_profile_page' user_profile_url_txt %}">powrót</a>
+{% endif %}
+<h3>nick<h3>
+<form method="POST" action ="{% url 'update_nick' user_profile_url_txt %}">
+    {% csrf_token %}
+{% if list_id %}
+<input type="hidden" name="list_id" value="{{list_id}}"/>
+{% endif %}
+<table>
+<tr><td>aktualny nick: </td><td>{{user_obj.nick}}</td></tr>
+<tr><td>nowy nick: </td><td><input type="text" name="new_nick" /></td></tr>
+<tr><td>hasło: </td><td><input type="password" name="confirm_password"/></td></tr>
+<tr><td><input type="submit" value="zmień nick"/></td></tr>
+</table>
+</form>
+
+<h3>hasło</h3>
+<form method="POST" action="{% url 'update_password' user_profile_url_txt %}">
+    {% csrf_token %}
+
+    {% if list_id %}
+        <input type="hidden" name="list_id" value="{{list_id}}"/>
+    {% endif %}
+    <table>
+        <tr><td>podaj nowe hasło: </td><td><input type="password" name="new_password_1"/></td></tr>
+        <tr><td>powtrórz nowe hasło: </td><td><input type="password" name="new_password_2"/></td></tr>
+        <tr><td>podaj aktualne hasło: </td><td><input type="password" name="current_password"/></td></tr>
+        <tr><td><input type="submit" value="zmień hasło"></td></tr>
+    </table>
+</form>
+
+<h3>adres email</h3>
+<form method="POST" action ="{% url 'update_email' user_profile_url_txt %}">
+    {% csrf_token %}
+
+    {% if list_id %}
+    <input type="hidden" name="list_id" value="{{list_id}}"/>
+    {% endif %}
+    <table>
+    <tr><td>aktualny adres email: </td><td>{{user_obj.email}}</td></tr>
+    <tr><td>nowy adres email: </td><td><input type="text" name="new_email" /></td></tr>
+    <tr><td>hasło: </td><td><input type="password" name="confirm_password"/></td></tr>
+    <tr><td><input type="submit" value="zmień email"/></td></tr>
+    </table>
+</form>
+
+<h3>Usunięcie konta</h3>
+<form method="POST" action = "{% url 'delete_account' user_profile_url_txt %}">
+    {% csrf_token %}
+    {% if list_id %}
+    <input type="hidden" name="list_id" value="{{list_id}}"/>
+    {% endif %}
+    <p>Podaj hasło, by usunąć konto: <input type="password" name="confirm_password"/><input type="submit" value="Usuń konto"></p>
+</form>
+</div>
+{% endblock %}

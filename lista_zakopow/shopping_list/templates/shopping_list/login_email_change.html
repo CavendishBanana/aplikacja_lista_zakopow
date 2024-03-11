@@ -1,0 +1,14 @@
+{% extends "shopping_list/index.html" %}
+
+{% block login_title %}
+Zaloguj się by potwierdzić zmianę adresu email
+{% endblock %}
+
+{% block form_tag_info %}
+<p>Zaloguj się przez poniższy formularz, by potwierdzić zmianę adresu email</p>
+<form method="POST" action="{% url 'login_email_confirm' user_profile_url_txt change_email_url %}">
+{% endblock %}
+
+{% block registration %}
+<a href="{% url "main-page" %}">strona główna</a>
+{% endblock %}
