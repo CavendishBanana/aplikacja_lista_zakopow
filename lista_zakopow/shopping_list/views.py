@@ -209,6 +209,7 @@ def update_password(httprequest, user_profile_url_txt):
                 context["success_flag"] = True
                 context["success_msg"] = "Hasło zostało zmienione"
                 return render(httprequest, "shopping_list/edit_profile_pane.html", context)
+            r = HttpResponseRedirect( reverse("main-page"))
     return HttpResponseRedirect( reverse("main-page"))
 
 
