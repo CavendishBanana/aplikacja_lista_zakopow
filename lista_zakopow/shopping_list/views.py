@@ -110,6 +110,8 @@ def load_user_profile(httprequest, user_profile_url_txt):
     return HttpResponseRedirect( reverse("main-page"))
 
 
+#a
+
 def logout_user(httprequest, user_profile_url_txt):
     print("miau miau miau miau")
     if httprequest.method == "POST":
