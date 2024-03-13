@@ -1,15 +1,18 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}
 Lista zakupów | ustawienia {{user_obj.nick}}
 {% endblock %}
 
+{% block css_styles %}
+<link rel="stylesheet" href="{% static 'base.css' %}">
+<link rel="stylesheet" href="{% static 'shopping_list/styles.css' %}">
+{% endblock %}
+
 {% block content %}
 <div>
-<h1>Lista zakupów</h1>
-{% if error_flag %}
-    <p>{{error_msg}}</p>
-{% endif %}
+{% include "shopping_list/includes/page_title_snippet.html" %}
+{% include "shopping_list/includes/error_popup.html" with error_flag=error_flag error_msg=error_msg %}
 {% if success_flag %}
     <p>{{success_msg}}</p>
 {% endif %}
@@ -64,12 +67,14 @@ Lista zakupów | ustawienia {{user_obj.nick}}
 </form>
 
 <h3>Usunięcie konta</h3>
-<form method="POST" action = "{% url 'delete_account' user_profile_url_txt %}">
+<form id="delete_account_form_id" method="POST" action = "{% url 'delete_account' user_profile_url_txt %}" >
     {% csrf_token %}
     {% if list_id %}
-    <input type="hidden" name="list_id" value="{{list_id}}"/>
+    <input type="hidden" name="list_id" value="{{list_id}}" />
     {% endif %}
-    <p>Podaj hasło, by usunąć konto: <input type="password" name="confirm_password"/><input type="submit" value="Usuń konto"></p>
+    <p>Podaj hasło, by usunąć konto: <input type="password" name="confirm_password"  id="delete_account_password_submit" /> <button type="button" id="delete_account_button_id">usuń konto</button> <!-- <input type="submit" value="Usuń konto" id="delete_account_submit_id"/>--> </p>
 </form>
 </div>
+<script src="{% static 'shopping_list/edit_profile_page_scripts.js' %}"></script>
+
 {% endblock %}

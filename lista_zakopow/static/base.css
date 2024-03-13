@@ -1,9 +1,8 @@
 a {
-    color : green;
-    font-size : 2rem;
+    color : blue;
 }
 
 a:hover,
 a:active{
- color:brown;
+ color:darkblue;
 }

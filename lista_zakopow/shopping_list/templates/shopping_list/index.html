@@ -5,87 +5,69 @@ Lista zakupów
 {% endblock %}
 
 {% block css_styles %}
-<link rel="stylesheet" href="{% static 'base.css' %}">
-<link rel="stylesheet" href="{% static 'shopping_list/styles.css' %}">
+<link rel="stylesheet" href="{% static 'base.css' %}"/>
+<link rel="stylesheet" href="{% static 'shopping_list/styles.css' %}"/>
+<link rel="stylesheet" href="{% static 'shopping_list/index_page_styles.css' %}"/>
+
 {% endblock %}
 
 {% block content %}
 <div>
-    <h1>Lista zakupów</h1>
-    {% if error_flag %}
-        <p>{{error_msg}}</p>
-    {% endif %}
-    <h2>{%block login_title %}Logowanie{% endblock %}</h2>
-    {% block form_tag_info %}
-    <form method="POST" action="{% url 'login_user' %}">
-    {% endblock %}
-        {% csrf_token%}
-        <label for="user_login">Podaj login</label>
-        <input type="text" name="user_login" id="user_login">
-        <label for="user_password_1">Podaj hasło</label>
-        <input type="password" name="user_password_1" id="user_password_1">
-        <input type="submit">
-    </form>
-    {% block registration %}
-    <br>
-    <h2>Rejestracja</h2>
-    <form method="POST" action="{% url 'register_user' %}">
-        {% csrf_token%}
-        <label for="user_login">Login: </label>
-        <input type="text" name="user_login" id="user_login">
-        <label for="user_email">email: </label>
-        <input type="text" name="user_email" id="user_email">
-        <label for="user_password_1">hasło: </label>
-        <input type="password" name="user_password_1" id="user_password_1">
-        <label for="user_password_2">Powtórz hasło: </label>
-        <input type="password" name="user_password_2" id="user_password_2">
-        <label for="user_nick">Nick: </label>
-        <input type="text" name="user_nick" id="user_nick">
-        <input type="submit">
-    </form>
-    {% endblock %}
+    
+    
 
-</div>
-<!--
-<div><h1>Lista zakupów</h1></div>
+    {% include "shopping_list/includes/page_title_snippet.html" %}
+    {% include "shopping_list/includes/error_popup.html" with error_msg=error_msg error_flag=error_flag  %}
+    
 
-<div>
     <table>
-        {% if products_count != 0 %}
-            <tr><td>nazwa</td><td>w koszyku</td><td></td></tr>
-        {% for product in products %}
-
-        <tr>
-            <td> {{product.description}}</td><td> {% if product.bought == True %} tak {% endif %} {% if product.bought == False %} nie {% endif %}</td>
-            <td><form method="post" action="changebought/"> 
-                    {% csrf_token %}
-                    <input type="hidden" name="productid" id="product_add_remove_from_cart_id_{{product.id}}" value="{{product.id}}">
-                    {% if product.bought == True %}
-                        <button class="button-take-out">Wyjmij z koszyka</button>
-                    {% endif %}
-                    {% if product.bought == False %}
-                        <button class="button-put-in">Dodaj do koszyka</button>
-                    {% endif %}
+        <tr><td class="main_table_cell">
+            {% block form_tag_info %}
+            <form method="POST" action="{% url 'login_user' %}">
+            {% endblock %}
+                    <table id="login-table">
+                            <tr><td><h2>{%block login_title %}Logowanie{% endblock %}</h2></td></tr>
+                            <tr><td>{% csrf_token%}
+                            <label for="user_login">login: </label>
+                            </td><td>
+                            <input type="text" name="user_login" id="user_login_login">
+                            </td></tr>
+                            <tr><td>
+                            <label for="user_password_1">hasło: </label>
+                            </td><td>
+                            <input type="password" name="user_password_1" id="user_password_1_login">
+                            </td></tr>
+                            <tr><td>
+                            <input type="submit" value="zaloguj">
+                            </td></tr>
+                    </table>
             </form>
-            <form method="post" action="delete/">
-                {% csrf_token %}
-                <input type="hidden" name="productid" id="product_delete_id_{{product.id}}" value="{{product.id}}">
-                <button>Usuń</button>
+        </td>
+        {% block registration %}
+            <td class="main_table_cell">
+                <form method="POST" action="{% url 'register_user' %}">
+                <table>
+                    <tr><td><h2>Rejestracja</h2></td><td></td></tr>
+                    <tr><td>{% csrf_token%}<label for="user_login">login: </label></td><td><input type="text" name="user_login" id="user_login_register"></td></tr>
+                    <tr><td><label for="user_email">email: </label></td><td><input type="text" name="user_email" id="user_email"></td></tr>
+                    <tr><td><label for="user_password_1">hasło: </label></td><td><input type="password" name="user_password_1" id="user_password_1_register"></td></tr>
+                    <tr><td><label for="user_password_2">Powtórz hasło: </label></td><td><input type="password" name="user_password_2" id="user_password_2_register"></td></tr>
+                    <tr><td><label for="user_nick">Nick: </label></td><td><input type="text" name="user_nick" id="user_nick"></td></tr>
+                    <tr><td><input type="submit"></td><td></td></tr>
+                </table>
             </form>
-            </td>
+        </td>
+        {% endblock %}
         </tr>
-
-        {% endfor %}
-        {% endif %}
     </table>
-    <form method="POST" action="addnew/">
-        {% csrf_token %}
-        <label for="new-product-description">Dodaj produkt</label><input type="text" name="new-product-description" id="new-product-description"></input>
-        <button>Dodaj nowy</button>
-    </form>
+    
+    
+    
+
+    {% include "shopping_list/includes/cookies_popup.html" %}
+    <script src="{% static 'shopping_list/index_page_scripts.js' %}"></script>
 </div>
 
--->
 {% endblock %}
 
 

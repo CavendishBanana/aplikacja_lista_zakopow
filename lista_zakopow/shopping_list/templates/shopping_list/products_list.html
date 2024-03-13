@@ -1,12 +1,21 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}
 "Lista zakupów | {{list_name}}"
 {% endblock %}
 
+{% block css_styles %}
+<link rel="stylesheet" href="{% static 'base.css' %}">
+<link rel="stylesheet" href="{% static 'shopping_list/styles.css' %}">
+{% endblock %}
 
 {% block content %}
-<h1>Lista zakupów</h1>
+{% include "shopping_list/includes/page_title_snippet.html" %}
+{% if error_data %}
+{% include "shopping_list/includes/error_popup.html" with error_msg=error_data.error_msg error_flag=error_data.error_flag  %}
+{% else %}
+{% include "shopping_list/includes/error_popup.html" with error_msg="" error_flag=False  %}
+{% endif %}
 {% include "shopping_list/includes/account_snippet.html" with user_info_nick=user_nick user_info_hash=user_hash user_info_user_profile_url_txt=user_profile_url_txt list_id=list_id %}
 <h2>{{list_name}}</h2>
 
@@ -20,23 +29,25 @@
 {% for prod in products %}
     <tr>
         
-        <td>{{prod.item_description}}</td><td> <form method="POST" action="{% url "change_added_to_cart" user_profile_url_txt list_id %}"> {% csrf_token %} <input type="hidden" name="item_id" value="{{prod.id}}"/> <input type="submit" value="{% if prod.in_cart %}wyjmij z koszyka{% else %}włóż do koszyka{% endif %}"/> </form></td> <td><form method="POST" action="{% url "remove_item_from_list" user_profile_url_txt list_id %}"> {% csrf_token %} <input type="hidden" name="item_id" value="{{prod.id}}"/> <input type="submit" value="Usuń"/> </form></td>
+        <td {% if prod.in_cart %} bgcolor="lightgreen" {% else %} bgcolor="lightsalmon" {% endif %}>{{prod.item_description}}</td><td> <form method="POST" action="{% url "change_added_to_cart" user_profile_url_txt list_id %}"> {% csrf_token %} <input type="hidden" name="item_id" value="{{prod.id}}"/> <input type="submit" value="{% if prod.in_cart %}wyjmij z koszyka{% else %}włóż do koszyka{% endif %}"/> </form></td> <td><form method="POST" action="{% url "remove_item_from_list" user_profile_url_txt list_id %}"> {% csrf_token %} <input type="hidden" name="item_id" value="{{prod.id}}"/> <input type="submit" value="Usuń"/> </form></td>
         
     </td>
 {% endfor %}
 </table>
-<form method="POST" action="{{add_new_url}}">
+<form method="POST" id="add_new_product_form_id" action="{{add_new_url}}">
 {% csrf_token %}
 <input type="hidden" name="list_id" value="{{list_id}}"/>
 <label for="new_product_name">Nazwa produktu: </label>
 <input type="text" id="new_product_name" name="new_product_name"/>
-<input type="submit" value="Dodaj">
+<button type="button" id="add_new_product_button_id">Dodaj</button>
 </form>
 <a href="{% url "user_profile_page" user_profile_url_txt %}">powrót</a>
 {% if is_owner %}
 <h2>Edytujący</h2>
+{% if editors|length > 0 %}
 <table>
 <tr><td>nick</td><td>hash</td></tr>
+
 {% for editor in editors %}
 <tr>
 <td>{{editor.nick}}</td><td>{{editor.invitehash}}</td>
@@ -50,9 +61,15 @@
     </td>
 </tr>
 {% endfor %}
+</table>
+{% else %}
+<p>Nikt nie edytuje twojej listy</p>
+{% endif %}
 <h2>Zaproszeni</h2>
+{% if invitees|length > 0 %}
 <table>
 <tr><td>nick</td><td>hash</td></tr>
+
 {% for invitee in invitees %}
 <tr>
 <td>{{invitee.nick}}</td><td>{{invitee.invitehash}}</td>
@@ -67,6 +84,9 @@
 </tr>
 {% endfor %}
 </table>
+{% else %}
+<p>Nikt nie został zaproszony do edycji listy</p>
+{% endif %}
 <form method="POST" action="{% url 'invite_to_list_using_hash'  user_profile_url_txt list_id %}">
 {% csrf_token %}
 <label for="invited_user_hash">Podaj hash zapraszanej osoby</label>
@@ -75,10 +95,11 @@
 <input type="submit" value="zaproś"/> 
 </form>
 </table>
-<form method="POST" action="{% url "delete_list" user_profile_url_txt list_id %}">
+<form method="POST" id="delete_list_form_id" action="{% url "delete_list" user_profile_url_txt list_id %}">
     {% csrf_token %}
     <input type="hidden" name="list_id" value="{{list_id}}"/>
-    <input type="submit" value="skasuj listę" />
+    <!-- <input type="submit" value="skasuj listę" /> -->
+    <button type="button" id="delete_list_button_id">skasuj listę</button>
 </form>
 {% else %}
 <table>
@@ -96,9 +117,7 @@
     <input type="submit" value="Opuść edytujących listę" />
 </form>
 {% endif%}
-{% if error_data %}
-{%if error_data.error_flag %}
-    <p>{{error_data.error_msg}}</p>
-{% endif %}
-{% endif %}
+<script src="{% static 'shopping_list/show_error_popup.js' %}"></script>
+
+<script src="{% static 'shopping_list/products_list_scripts.js' %}"></script>
 {% endblock %}
