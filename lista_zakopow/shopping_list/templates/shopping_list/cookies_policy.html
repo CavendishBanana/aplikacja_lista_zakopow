@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+Lista zakupów | polityka ciasteczek
+{% endblock %}
+
+
+{% block css_styles %}
+<link rel="stylesheet" href="{% static 'base.css' %}"/>
+<link rel="stylesheet" href="{% static 'shopping_list/styles.css' %}"/>
+{% endblock %}
+
+{% block content %}
+<div>
+    {% include "shopping_list/includes/page_title_snippet.html" %}
+    <h2>Polityka ciasteczek</h2>
+    {% lorem 3 p %}
+    <a href="{% url 'main-page' %}">Strona główna</a>
+</div>
+{% endblock %}
+
+
+

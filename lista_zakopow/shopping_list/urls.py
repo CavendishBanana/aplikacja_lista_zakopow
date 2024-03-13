@@ -4,11 +4,13 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="main-page"),
+    path("cookiespolicy", views.cookies_policy_view, name="cookies_policy"),
     path("login/", views.login_user, name = "login_user"),
     path("register/", views.register_user, name = "register_user"),
     path("user-profile/<slug:user_profile_url_txt>/", views.load_user_profile, name = "user_profile_page"),
     path("user-profile/<slug:user_profile_url_txt>/create_new_list/", views.create_new_list, name= "create_new_list"),
     path("user-profile/<slug:user_profile_url_txt>/list/<int:list_id>", views.list_view, name = "list_page"),
+    path("user-profile/<slug:user_profile_url_txt>/list/<int:list_id>/getproducts", views.get_products_view, name = "get_products"),
     path("user-profile/<slug:user_profile_url_txt>/list/<int:list_id>/additem", views.add_product, name="add_product"),
     path("user-profile/<slug:user_profile_url_txt>/list/<int:list_id>/removeitem"  ,views.remove_product ,name="remove_item_from_list" ),
     path("user-profile/<slug:user_profile_url_txt>/list/<int:list_id>/changeadded" , views.change_added_to_cart ,name="change_added_to_cart" ),

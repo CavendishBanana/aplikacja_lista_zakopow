@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from datetime import datetime, timedelta
 from django.core.mail import send_mail
 from django.utils import timezone
+import json
 
 #from shopping_list.classes import UserUnified
 #from shopping_list.classes.UserInitType import UserInitType
@@ -58,6 +59,10 @@ def index(httprequest):
         httprequest.session.pop("user_login")
         httprequest.session.modified=True
     return render(httprequest, "shopping_list/index.html")
+
+
+def cookies_policy_view(httprequest):
+    return render(httprequest, "shopping_list/cookies_policy.html")
 
 
     '''
@@ -301,11 +306,15 @@ def create_new_list(httprequest, user_profile_url_txt):
             matching_user = get_logged_in_user_from_request_obj(httprequest)
             if matching_user is not None:
                 new_list_name = httprequest.POST["new_list_name"]
-                new_list = models.ShoppingList(name=new_list_name, owner=matching_user.get_normal_user())
-                new_list.save()
-                editionRight = models.EditingUser(normalUser = matching_user.get_normal_user(), shoppingList = new_list, inviteAccepted=True)
-                editionRight.save() 
-                list_id = new_list.id
+                if len(new_list_name.strip()) > 0:
+                    with transaction.atomic():
+                        new_list = models.ShoppingList(name=new_list_name, owner=matching_user.get_normal_user())
+                        new_list.save()
+                        editionRight = models.EditingUser(normalUser = matching_user.get_normal_user(), shoppingList = new_list, inviteAccepted=True)
+                        editionRight.save() 
+                        list_id = new_list.id
+                else:
+                    return render(httprequest, "shopping_list/user_profile.html", {"error_flag":True, "error_msg": "Podaj nazwę nowej listy"})
                 return HttpResponseRedirect(reverse("list_page", kwargs={ "user_profile_url_txt" : get_user_profile_url(matching_user), "list_id" : list_id }))
     return HttpResponseRedirect( reverse("main-page"))
 
@@ -349,14 +358,42 @@ def list_view(httprequest, user_profile_url_txt, list_id):
                     shopping_list_items = []
                     for item in shoping_list_items_0:
                         shopping_list_items.append( { "id" : item.id, "item_description" : item.description, "in_cart" : (item.added_to_cart == True) } )
-                
-                    return render(httprequest, "shopping_list/products_list.html", { "products" : shopping_list_items, "is_owner": user_is_owner, "list_name": shopping_list.name, \
+                    
+                    
+                    rendered_response = render(httprequest, "shopping_list/products_list.html", { "products" : shopping_list_items, "is_owner": user_is_owner, "list_name": shopping_list.name, \
                                                                                     "create_date" : shopping_list.create_date, "owner_nick" :  list_owner.nick, \
                                                                                         "add_new_url" : reverse( "add_product", kwargs={ "user_profile_url_txt": get_user_profile_url(matching_user), "list_id": list_id  } ),\
-                                                                                        "list_id":list_id, "user_profile_url_txt" : get_user_profile_url(matching_user) , "user_nick": matching_user.nick, "user_hash": matching_user.invitehash , "editors" : list_editors, "invitees": invitees_by_that_user, "error_data" : error_data })
+                                                                                        "list_id":list_id, "user_profile_url_txt" : get_user_profile_url(matching_user) , "user_nick": matching_user.nick, "user_hash": matching_user.invitehash , \
+                                                                                            "editors" : list_editors, "invitees": invitees_by_that_user, "error_data" : error_data })
+                    print("list_view api url: ",reverse("get_products", kwargs={"user_profile_url_txt" : get_user_profile_url(matching_user), "list_id": int(list_id)} ))
+                    rendered_response.set_cookie("referesh_link_lista_zakopow", get_api_products_url(kwargs={"user_profile_url_txt" : get_user_profile_url(matching_user), "list_id": int(list_id)} ), None)
+                    return rendered_response
                 user_url = get_user_profile_url(matching_user)
                 return HttpResponseRedirect( reverse("user_profile_page", args=(user_url,))) 
     return HttpResponseRedirect( reverse("main-page"))
+
+
+def get_api_products_url(kwargs):
+    return "127.0.0.1:8000" + reverse("get_products", kwargs = {"user_profile_url_txt" : kwargs["user_profile_url_txt"], "list_id": kwargs["list_id"]} )
+
+def get_products_view(httprequest, user_profile_url_txt, list_id):
+    print("get_products_view - enter the function")
+    if httprequest.method == "GET":
+        if user_is_logged_in(httprequest):
+            matching_user = get_logged_in_user_from_request_obj(httprequest)
+            user_login = matching_user.login
+            if matching_user is not None:  
+                list_id = int(list_id)
+                shopping_list_list = models.ShoppingList.objects.filter(id=list_id)
+                shopping_list = shopping_list_list[0]
+                shopping_list_items_0 = shopping_list.listproducts.all()
+                shopping_list_items = []
+                for item in shopping_list_items_0:
+                    shopping_list_items.append( { "id" : item.id, "item_description" : item.description, "in_cart" : (item.added_to_cart == True) } )
+                response_data = {"items" : shopping_list_items, "status" : "ok"}
+                response_data_json = json.dumps(response_data)
+                return HttpResponse(response_data_json)
+    return HttpResponse( json.dumps( {"items" : [], "status": "fail"}))
 
 
 def remove_editor(httprequest, user_profile_url_txt, list_id):
@@ -552,7 +589,13 @@ def prepare_user_login(login_passed_from_user):
     return slugify(login_passed_from_user)
 
 def my_validate_password(password):
-    pswd_val = validate_password(password)
+    pswd_val = True
+    try:
+        pswd_val = validate_password(password)
+    except Exception as exc:
+        pswd_val = False
+        pass
+
     print("my_validate_password pswd_val: ", pswd_val)
     return ( pswd_val is None )
 
