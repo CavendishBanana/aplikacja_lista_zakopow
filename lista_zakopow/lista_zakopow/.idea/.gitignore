@@ -7,5 +7,5 @@ db.sqlite3
 .idea/misc.xml
 .idea/modules.xml
 vcs.xml
-__pycache__/
+*/__pycache__/
 
