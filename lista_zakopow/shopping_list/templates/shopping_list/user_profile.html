@@ -5,8 +5,8 @@ Lista zakupów | {{user_data.nick}}
 {% endblock %}
 
 {% block css_styles %}
-<link rel="stylesheet" href="{% static 'base.css' %}">
-<link rel="stylesheet" href="{% static 'shopping_list/styles.css' %}">
+<link rel="stylesheet" href="{% static 'base.css' %}"/>
+<link rel="stylesheet" href="{% static 'shopping_list/styles.css' %}"/>
 {% endblock %}
 
 {% block content %}
@@ -19,8 +19,8 @@ Lista zakupów | {{user_data.nick}}
     {% csrf_token %}
 
 <label for="new_list_name">nazwa: </label>
-<input type="text" name="new_list_name" id="new_list_name">
-<!-- <input type="submit" value="utwórz"> -->
+<input type="text" name="new_list_name" id="new_list_name"/>
+
 <button type="button" id="create_new_list_button">utwórz</button>
 </form>
 <h2>Moje listy</h2>
@@ -45,9 +45,9 @@ Lista zakupów | {{user_data.nick}}
 <tr><td>lista</td><td>właściciel (hash)</td><td>zaakceptuj</td></tr>
 {% for invite in invites_data %}
     <tr><td>{{invite.list_name}}</td><td>{{invite.list_owner}} ({{invite.owner_hash}})</td>
-        <td><form method="POST" action="{% url 'accept_invite' user_data.user_profile_url_txt %}"> {% csrf_token %}<input type="hidden" name="list_id" value="{{invite.list_id}}"/><input type="submit" value="zaakceptuj" />
-        <td><form method="POST" action="{% url 'reject_invite' user_data.user_profile_url_txt %}"> {% csrf_token %}<input type="hidden" name="list_id" value="{{invite.list_id}}"/><input type="submit" value="odrzuć" /></form></td>
-        </form></td></tr>
+        <td><form method="POST" action="{% url 'accept_invite' user_data.user_profile_url_txt %}"> {% csrf_token %}<input type="hidden" name="list_id" value="{{invite.list_id}}"/><input type="submit" value="zaakceptuj" /></form></td>
+        <td><form method="POST" action="{% url 'reject_invite' user_data.user_profile_url_txt %}"> {% csrf_token %}<input type="hidden" name="list_id" value="{{invite.list_id}}"/><input type="submit" value="odrzuć" /></form></td></tr>
+        
 {% endfor %}
 </table>
 {% else %}

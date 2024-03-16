@@ -25,7 +25,7 @@
     <p>Właściciel: {{owner_nick}}</p>
 {% endif %}
 <p>Utworzono: {{create_date}} </p>
-<table>
+<table id="products_table_id">
 {% for prod in products %}
     <tr>
         
@@ -45,7 +45,7 @@
 {% if is_owner %}
 <h2>Edytujący</h2>
 {% if editors|length > 0 %}
-<table>
+<table id="editing_users_table_id">
 <tr><td>nick</td><td>hash</td></tr>
 
 {% for editor in editors %}
@@ -67,7 +67,7 @@
 {% endif %}
 <h2>Zaproszeni</h2>
 {% if invitees|length > 0 %}
-<table>
+<table id="invited_users_table_id">
 <tr><td>nick</td><td>hash</td></tr>
 
 {% for invitee in invitees %}

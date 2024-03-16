@@ -29,25 +29,5 @@ urlpatterns = [
     path("user-profile/<slug:user_profile_url_txt>/rejectinvite/", views.reject_invite, name= "reject_invite"),
     path("user-profile/<slug:user_profile_url_txt>/list/<int:list_id>/leavelist" , views.leave_list_of_other_user , name="leave_list" ),
     path("user-profile/<slug:user_profile_url_txt>/list/<int:list_id>/cancelinvite" , views.cancel_invite_to_other_user , name="cancel_invite" )
-
-    #path("changebought/", views.change_bought_flag, name = "change_bought_flag"),
-    #path("delete/", views.delete_product, name="delete_product"),
-    #path("addnew/", views.add_new_product, name="add_new_product")
     
 ]
-'''
-urlpatterns = [
-    distill_path('', views.index, name="main-page", distill_file = "index.html"),
-    distill_path('changebought', views.change_bought_flag, name="change_bought_flag", distill_file = "index_ch.html"),
-    distill_path('delete', views.delete_product, name="delete_product", distill_file = "index.html"),
-    distill_path('addnew', views.add_new_product, name="add_new_product", distill_file = "index.html")
-]
-'''
-'''
-urlpatterns = [
-    distill_path('', views.index, name="main-page", distill_file = "index.html"),
-    distill_path('changebought', views.change_bought_flag, name="change_bought_flag", distill_file = "index.html"),
-    distill_path('delete', views.delete_product, name="delete_product", distill_file = "index.html"),
-    distill_path('addnew', views.add_new_product, name="add_new_product", distill_file = "index.html")
-]
-'''

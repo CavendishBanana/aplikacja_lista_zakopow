@@ -1,6 +1,6 @@
 
 <div class="accountsnippet">
-    <table>
+    <table id="account_snippet_table_id">
         <tr><td>nick (hash)</td> <td><form method="GET" action="{% url 'edit_profile' user_info_user_profile_url_txt %}"> 
             {% csrf_token %}
             {% if list_id %}
@@ -16,25 +16,3 @@
         </form></td> </tr>
     </table>
 </div>
-
-
-
-
-
-<!--<table>
-        <tr><td>nick (hash)</td></tr>
-        <tr><td>{{user_info_nick}} ({{user_info_hash}})</td></tr>
-        <tr><td><form method="GET" action="{% url 'edit_profile' user_info_user_profile_url_txt %}"> 
-            {% csrf_token %}
-            {% if list_id %}
-            <input type="hidden" name="list_id" value="{{list_id}}"/>
-            {% endif %}
-            <input type="hidden" name="user_hash" value="{{user_info_hash}}"/>
-            <input type="submit" value="edytuj profil"/>
-        </form></td></tr>
-        <tr><td><form method="POST" action="{% url 'logoutuser' user_info_user_profile_url_txt %}"> 
-            {% csrf_token %}
-            <input type="hidden" name="user_hash" value="{{user_info_hash}}"/>
-            <input type="submit" value="wyloguj"/>
-        </form></td></tr>
-    </table>-->

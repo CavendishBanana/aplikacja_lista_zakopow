@@ -30,15 +30,15 @@ Lista zakupów
                             <tr><td>{% csrf_token%}
                             <label for="user_login">login: </label>
                             </td><td>
-                            <input type="text" name="user_login" id="user_login_login">
+                            <input type="text" name="user_login" id="user_login_login"/>
                             </td></tr>
                             <tr><td>
                             <label for="user_password_1">hasło: </label>
                             </td><td>
-                            <input type="password" name="user_password_1" id="user_password_1_login">
+                            <input type="password" name="user_password_1" id="user_password_1_login"/>
                             </td></tr>
                             <tr><td>
-                            <input type="submit" value="zaloguj">
+                            <input type="submit" value="zaloguj"/>
                             </td></tr>
                     </table>
             </form>
@@ -48,12 +48,12 @@ Lista zakupów
                 <form method="POST" action="{% url 'register_user' %}">
                 <table>
                     <tr><td><h2>Rejestracja</h2></td><td></td></tr>
-                    <tr><td>{% csrf_token%}<label for="user_login">login: </label></td><td><input type="text" name="user_login" id="user_login_register"></td></tr>
-                    <tr><td><label for="user_email">email: </label></td><td><input type="text" name="user_email" id="user_email"></td></tr>
-                    <tr><td><label for="user_password_1">hasło: </label></td><td><input type="password" name="user_password_1" id="user_password_1_register"></td></tr>
-                    <tr><td><label for="user_password_2">Powtórz hasło: </label></td><td><input type="password" name="user_password_2" id="user_password_2_register"></td></tr>
-                    <tr><td><label for="user_nick">Nick: </label></td><td><input type="text" name="user_nick" id="user_nick"></td></tr>
-                    <tr><td><input type="submit"></td><td></td></tr>
+                    <tr><td>{% csrf_token%}<label for="user_login">login: </label></td><td><input type="text" name="user_login" id="user_login_register"/></td></tr>
+                    <tr><td><label for="user_email">email: </label></td><td><input type="text" name="user_email" id="user_email"/></td></tr>
+                    <tr><td><label for="user_password_1">hasło: </label></td><td><input type="password" name="user_password_1" id="user_password_1_register"/></td></tr>
+                    <tr><td><label for="user_password_2">Powtórz hasło: </label></td><td><input type="password" name="user_password_2" id="user_password_2_register"/></td></tr>
+                    <tr><td><label for="user_nick">Nick: </label></td><td><input type="text" name="user_nick" id="user_nick"/></td></tr>
+                    <tr><td><input type="submit" value="zarejestruj"/></td><td></td></tr>
                 </table>
             </form>
         </td>
