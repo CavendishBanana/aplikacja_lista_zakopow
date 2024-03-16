@@ -1,0 +1,11 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+*.pyc
+db.sqlite3
+.idea/lista_zakopo.iml
+.idea/misc.xml
+.idea/modules.xml
+vcs.xml
+__pycache__/
+
