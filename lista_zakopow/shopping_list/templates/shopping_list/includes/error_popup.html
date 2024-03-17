@@ -4,6 +4,9 @@
 
             <div class="error_popup" id="error_popup">
                 <p class="err_popup_p_tag error_popup_general" id="error_msg_p">{{error_msg}}</p>
+                {% if error_flag %}
+                <div style="display:none" id="div_error_flag_error_popup"></div>
+                {% endif %}
             </div>
 
     {% else %}

@@ -77,26 +77,28 @@ def cookies_policy_view(httprequest):
             products.append( {"id" : str(product["id"]), "description": str(product["description"]), "bought": bought_flag } )
         return render(httprequest, "shopping_list/index.html", {"products" : products, "products_count": str(len(products))})
     '''
-
+def get_user_profile_lists(user):
+    lists_owned = models.ShoppingList.objects.filter(owner=user.get_normal_user())
+    lists_being_edited = models.ShoppingList.objects.filter(~Q(owner=user.get_normal_user()) & Q(editor=user.get_normal_user()))
+    resp_list_owned = []
+    for lst in lists_owned:
+        resp_list_owned.append( { "name" : lst.name, "create_date": lst.create_date, "id" : lst.id, "list_link" : reverse("list_page", args=[get_user_profile_url(user), lst.id]) })
+    resp_list_edited = []
+    for lst in lists_being_edited:
+        resp_list_edited.append( { "name" : lst.name, "create_date": lst.create_date, "id": lst.id, "list_link" : reverse("list_page", args=[get_user_profile_url(user), lst.id]) } )
+    invites = models.EditingUser.objects.filter(normalUser = user.get_normal_user(), inviteAccepted = False)
+    invites_data = []
+    for invite in invites:
+        inv_shopping_list = invite.shoppingList
+        invite_data = { "list_name" : inv_shopping_list.name, "list_id" : inv_shopping_list.id, "list_owner" : inv_shopping_list.owner.nick, "owner_hash" : inv_shopping_list.owner.invitehash }
+        invites_data.append(invite_data)
+    return resp_list_owned, resp_list_edited, invites_data
 
 def load_user_profile(httprequest, user_profile_url_txt):
     if user_is_logged_in(httprequest):
         user = get_logged_in_user_from_request_obj(httprequest)
         if user is not None:
-            lists_owned = models.ShoppingList.objects.filter(owner=user.get_normal_user())
-            lists_being_edited = models.ShoppingList.objects.filter(~Q(owner=user.get_normal_user()) & Q(editor=user.get_normal_user()))
-            resp_list_owned = []
-            for lst in lists_owned:
-                resp_list_owned.append( { "name" : lst.name, "create_date": lst.create_date, "id" : lst.id, "list_link" : reverse("list_page", args=[get_user_profile_url(user), lst.id]) })
-            resp_list_edited = []
-            for lst in lists_being_edited:
-                resp_list_edited.append( { "name" : lst.name, "create_date": lst.create_date, "id": lst.id, "list_link" : reverse("list_page", args=[get_user_profile_url(user), lst.id]) } )
-            invites = models.EditingUser.objects.filter(normalUser = user.get_normal_user(), inviteAccepted = False)
-            invites_data = []
-            for invite in invites:
-                inv_shopping_list = invite.shoppingList
-                invite_data = { "list_name" : inv_shopping_list.name, "list_id" : inv_shopping_list.id, "list_owner" : inv_shopping_list.owner.nick, "owner_hash" : inv_shopping_list.owner.invitehash }
-                invites_data.append(invite_data)
+            resp_list_owned, resp_list_edited, invites_data = get_user_profile_lists(user)
             user_data = { "nick": user.nick, "user_profile_url_txt" : get_user_profile_url(user), "user_hash": user.invitehash}
             return render(httprequest, "shopping_list/user_profile.html", { "owned_lists" : resp_list_owned, "edited_lists": resp_list_edited, "user_data": user_data, "invites_data": invites_data} )
     return HttpResponseRedirect( reverse("main-page"))
@@ -308,9 +310,11 @@ def create_new_list(httprequest, user_profile_url_txt):
                 
                     return HttpResponseRedirect(reverse("list_page", kwargs={ "user_profile_url_txt" : get_user_profile_url(matching_user), "list_id" : list_id }))
                 else:
-                    return render(httprequest, "shopping_list/user_profile.html", {"error_flag":True, "error_msg": "Podaj nazwę nowej listy"})
+                    resp_list_owned, resp_list_edited, invites_data = get_user_profile_lists(matching_user)
+                    user_data = { "nick": matching_user.nick, "user_profile_url_txt" : get_user_profile_url(matching_user), "user_hash": matching_user.invitehash}
+                    return render(httprequest, "shopping_list/user_profile.html", { "error_flag":True, "error_msg": "Podaj nazwę nowej listy" ,"owned_lists" : resp_list_owned, "edited_lists": resp_list_edited, "user_data": user_data, "invites_data": invites_data} )
+                    #return render(httprequest, "shopping_list/user_profile.html", {"error_flag":True, "error_msg": "Podaj nazwę nowej listy", "user_data" : {"nick" : matching_user.nick, "user_hash" : matching_user.invitehash, "user_profile_url_txt" : get_user_profile_url(matching_user) }})
     return HttpResponseRedirect( reverse("main-page"))
-
 
 def list_view(httprequest, user_profile_url_txt, list_id):
     error_data = { "error_flag" : False, "error_msg" : ""}

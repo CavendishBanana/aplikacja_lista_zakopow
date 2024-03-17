@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from shopping_list.tests.utils import EnvironmentSetup
 from django.urls import reverse
+from django.test import Client
 import os
 # from webdriver_manager.chrome import ChromeDriverManager
 from os import path
@@ -68,7 +69,7 @@ class SeleniumTestBase(StaticLiveServerTestCase):
         env_set_up.prepare_environment()
         self.users_credentials = create_n_users(3, self.client)
 
-    def __get_url(self, urls_file_url_name, kwargs=None):
+    def _get_url(self, urls_file_url_name, kwargs=None):
         if kwargs is None:
             return self.live_server_url + reverse(urls_file_url_name)
         #return self.domain_name + reverse(urls_file_url_name, kwargs=kwargs)
@@ -77,8 +78,8 @@ class SeleniumTestBase(StaticLiveServerTestCase):
     def tearDown(self):
         self.driver.close()
 
-    def __login_user(self, login, password, max_wait=4) -> bool:
-        main_page_url = self.__get_url("main-page")
+    def _login_user(self, login, password, max_wait=4) -> bool:
+        main_page_url = self._get_url("main-page")
         self.driver.get(main_page_url)
         self.driver.maximize_window()
         wait = WebDriverWait(self.driver, max_wait)
@@ -103,9 +104,9 @@ class SeleniumTestBase(StaticLiveServerTestCase):
             success_login = False
         return success_login
 
-    def __get_default_credentials(self):
+    def _get_default_credentials(self):
         return self.users_credentials[0]
     
-    
+
 
 
