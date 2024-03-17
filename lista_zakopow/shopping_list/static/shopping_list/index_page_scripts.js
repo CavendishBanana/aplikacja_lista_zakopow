@@ -1,29 +1,14 @@
+import { show_error_popup } from "./show_error_popup.js";
+
 window.addEventListener("load", (event) => {
     console.log("main page script");
-    let error_popup_box = document.getElementById("error_popup");
-    if(error_popup_box != null)
+    if( document.getElementById("div_error_flag_error_popup") != null )
     {
-        let err_p_tag = document.getElementById("error_msg_p");
-        //let invisible_property = "display";
-        let invisible_value="none";
-        let visible_value="block";
-        console.log("main page script 2");
-        console.log(error_popup_box);
-        //modal.style.display = "block";
-        error_popup_box.style.display = visible_value; 
-        //error_popup_box.setAttribute(invisible_property, visible_value);
-        setTimeout(() => {
-            //error_popup_box.setAttribute(invisible_property, invisible_value);    
-            //error_popup_box.style.display = invisible_value; 
-            //err_p_tag.style.color = "white";
-            console.log( document.getElementById("error_msg_p").innerHTML);
-            err_p_tag.innerHTML = "a";
-            err_p_tag.style.color= "white";
-            error_popup_box.style.backgroundColor ="white";
-          }, 3000);
-        prepareCookiesHandling();
+      console.log("load page event - error flag set");
+      show_error_popup();
     }
 
+    prepareCookiesHandling();
   });
 
 

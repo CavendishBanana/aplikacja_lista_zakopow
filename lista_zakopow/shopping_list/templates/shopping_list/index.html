@@ -13,7 +13,7 @@ Lista zakupów
 
 {% block content %}
 <div>
-    
+    <script src="{% static 'shopping_list/show_error_popup.js' %}" type="module"></script>
     
 
     {% include "shopping_list/includes/page_title_snippet.html" %}
@@ -65,7 +65,7 @@ Lista zakupów
     
 
     {% include "shopping_list/includes/cookies_popup.html" %}
-    <script src="{% static 'shopping_list/index_page_scripts.js' %}"></script>
+    <script src="{% static 'shopping_list/index_page_scripts.js' %}" type="module"></script>
 </div>
 
 {% endblock %}

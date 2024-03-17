@@ -1,5 +1,9 @@
 window.addEventListener("load", (event) => { 
     add_listener_to_delete_account_submit();
+    if(document.getElementById("div_error_flag_error_popup")!= null)
+    {
+        show_error_popup();
+    }
 
 });
 

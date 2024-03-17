@@ -2,6 +2,7 @@
     --basicBackgroundColor: white;
     --popupErrorColor: lightcoral;
     --standardBorderRadius: 6px;
+    --basicfontColor : black;
 }
 
 .page_title{
@@ -48,20 +49,28 @@ body{
 
 .error_popup{
 
-display: none;
-
-background-color: var(--popupErrorColor);
-
-visibility: visible;
-
-color: black;
+    display: block;
+    
+    visibility: visible;
+    
+    }
+.err_popup_p_tag_activated{
+    background-color: var(--popupErrorColor);
+    color: var(--basicfontColor);
 }
 
-
-.err_popup_p_tag_2{
+.err_popup_p_tag_deactivated{
+    background-color: var(--basicBackgroundColor);
     color: var(--basicBackgroundColor);
 }
-
+.err_p_tag_dynamic_class{
+    border-style: solid;
+    border-color: red;
+}
+.err_p_tag_dynamic_class_2{
+    border-style: solid;
+    border-color: green;
+}
 
 #logout_submit_button_id {
     background-color: orangered;

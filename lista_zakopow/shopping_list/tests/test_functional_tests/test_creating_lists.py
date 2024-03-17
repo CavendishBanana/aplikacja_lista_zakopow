@@ -180,7 +180,7 @@ class SeleniumCreatingLists(SeleniumTestBase):
         expected_error_popup_text = "Podaj nazwę nowej listy"
 
         current_page_url = self.driver.current_url
-        expected_page_url = self._get_url("user_profile_page", kwargs={"user_profile_url_txt" : get_user_profile_url(this_user)})
+        expected_page_url = self._get_url("create_new_list", kwargs={"user_profile_url_txt" : get_user_profile_url(this_user)})
 
         this_users_lists_count_in_db_count_after = len(ShoppingList.objects.filter(owner = this_user.get_normal_user()))
 
@@ -204,6 +204,7 @@ class SeleniumCreatingLists(SeleniumTestBase):
         self.assertEquals(error_popup_text, expected_error_popup_text)
         self.assertEquals(current_page_url, expected_page_url)
 
+   
 
 
 
