@@ -17,7 +17,15 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class SeleniumCreatingLists(SeleniumTestBase):
-    
+    def __login_and_create_new_list(self, user_credentials, new_list_name, login_the_user = True, max_wait = 4):
+        user_credentials = self._get_default_credentials()
+        textbox_new_list_name, submit_create_new_list = self.__login_and_get_elements_to_create_new_list(user_credentials, login_the_user=login_the_user, max_wait=max_wait)
+        textbox_new_list_name.send_keys(new_list_name)
+        submit_create_new_list.click()
+        wait = WebDriverWait(self.driver, max_wait)
+        wait.until(EC.visibility_of_element_located((By.ID, "logout_submit_button_id")))
+
+
     def __login_and_get_elements_to_create_new_list_inside_lists(self, this_user_credentials = None, login_the_user = True, max_wait = 4):
         max_wait = self.max_wait
         if login_the_user:
@@ -60,13 +68,6 @@ class SeleniumCreatingLists(SeleniumTestBase):
         lists_with_matching_name_count_after =len(lists_with_matching_name_after)
         self.assertEquals(lists_with_matching_name_count_before + 1, lists_with_matching_name_count_after)
 
-    def __login_and_create_new_list(self, user_credentials, new_list_name, login_the_user = True, max_wait = 4):
-        user_credentials = self._get_default_credentials()
-        textbox_new_list_name, submit_create_new_list = self.__login_and_get_elements_to_create_new_list(user_credentials, login_the_user=login_the_user, max_wait=max_wait)
-        textbox_new_list_name.send_keys(new_list_name)
-        submit_create_new_list.click()
-        wait = WebDriverWait(self.driver, max_wait)
-        wait.until(EC.visibility_of_element_located((By.ID, "logout_submit_button_id")))
 
     def test_create_new_list_the_list_is_in_user_profile_ui(self):
         user_credentials = self._get_default_credentials()
@@ -204,8 +205,45 @@ class SeleniumCreatingLists(SeleniumTestBase):
         self.assertEquals(error_popup_text, expected_error_popup_text)
         self.assertEquals(current_page_url, expected_page_url)
 
-   
+    def test_create_list_logged_out(self):
+        user_credentials = self._get_default_credentials()
+        max_wait = self.max_wait
+        new_list_name = self.new_list_name
+        self._login_user(user_credentials["login"], user_credentials["password"], max_wait)
+        this_user = UserUnified(user_credentials["login"], UserInitType.LOGIN)
+        this_user_lists_count_before = len(ShoppingList.objects.filter(owner=this_user.get_normal_user()) )
+        user_profile_link = self._get_url( "user_profile_page", kwargs={"user_profile_url_txt" : get_user_profile_url(this_user)})
+        self.driver.execute_script("window.open('');") 
+        self.driver.switch_to.window(self.driver.window_handles[1]) 
+        self.driver.get(user_profile_link) 
+        self.driver.switch_to.window(self.driver.window_handles[0]) 
+        self.driver.find_element(By.ID, "logout_submit_button_id").click()
+        wait = WebDriverWait(self.driver, max_wait)
+        wait.until(EC.visibility_of_element_located((By.ID, "error_popup")))
+        login_table_count_1st_tab = len(self.driver.find_elements(By.ID, "login-table"))
+        login_page_url_1st_tab = self.driver.current_url
+        self.driver.switch_to.window(self.driver.window_handles[1]) 
+        new_list_name_textbox = self.driver.find_element(By.ID, "new_list_name")
+        new_list_create_button = self.driver.find_element(By.ID, "create_new_list_button")
+        new_list_name_textbox.send_keys( new_list_name + "_2")
+        new_list_create_button.click()
+        wait = WebDriverWait(self.driver, max_wait)
+        wait.until(EC.visibility_of_element_located((By.ID, "error_popup")))
+        login_table_count_2nd_tab = len(self.driver.find_elements(By.ID, "login-table"))
+        login_page_url_2nd_tab = self.driver.current_url
+        expected_url = self._get_url("main-page")
 
+        this_user_lists_count_after = len(ShoppingList.objects.filter(owner=this_user.get_normal_user()) )
+
+        self.driver.close()
+        self.driver.switch_to.window(self.driver.window_handles[0]) 
+
+        self.assertEquals(this_user_lists_count_before, this_user_lists_count_after)
+        self.assertEquals(login_table_count_1st_tab, 1)
+        self.assertEquals(login_table_count_2nd_tab, 1)
+        self.assertEquals(login_page_url_1st_tab, expected_url)
+        self.assertEquals(login_page_url_2nd_tab, expected_url)
+        
 
 
 

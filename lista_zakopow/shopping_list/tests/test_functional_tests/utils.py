@@ -107,6 +107,9 @@ class SeleniumTestBase(StaticLiveServerTestCase):
     def _get_default_credentials(self):
         return self.users_credentials[0]
     
+    def _get_default_credentials_index(self):
+        return 0
+    
 
 
 

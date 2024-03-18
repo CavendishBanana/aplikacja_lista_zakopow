@@ -1,4 +1,4 @@
-//import { show_error_popup } from "./show_error_popup.js";
+import { show_error_popup } from "./show_error_popup.js";
 
 window.addEventListener("load", (event) => { 
     add_listener_to_delete_list();
@@ -27,11 +27,18 @@ function add_listener_to_add_new_product()
     
 }
 
-
+function validate_invite_form(){
+    let formValid =  ( document.getElementById("invited_user_hash").length > 0 )
+    if(!formValid)
+    {
+        show_error_popup("Podaj hash zapraszanej osoby");
+    }
+    return formValid;
+}
 
 function add_listener_to_delete_list()
 {
-    delete_list_button = document.getElementById("delete_list_button_id");
+    let delete_list_button = document.getElementById("delete_list_button_id");
     delete_list_button.addEventListener("click", (event) => {
         if(window.confirm("Czy na pewno chcesz skasować listę?"))
             {
