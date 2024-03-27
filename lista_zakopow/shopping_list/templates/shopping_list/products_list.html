@@ -87,7 +87,7 @@
 {% else %}
 <p>Nikt nie został zaproszony do edycji listy</p>
 {% endif %}
-<form method="POST" action="{% url 'invite_to_list_using_hash'  user_profile_url_txt list_id %}">
+<form method="POST" action="{% url 'invite_to_list_using_hash'  user_profile_url_txt list_id %}" onsubmit="return validate_invite_form()">
 {% csrf_token %}
 <label for="invited_user_hash">Podaj hash zapraszanej osoby</label>
 <input type="hidden" name="list_id" value="{{list_id}}"/>

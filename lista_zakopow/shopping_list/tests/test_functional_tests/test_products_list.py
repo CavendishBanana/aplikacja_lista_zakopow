@@ -412,5 +412,48 @@ class SeleniumProductsListTest(SeleniumTestBase):
         self.assertEquals(list_product_count_after_2nd_delete + 1, list_products_count_before_2nd_delete)
 
 
+    def __prepare_conditions_logged_out_action_on_products_list(self, user_credentials, product_base_name, prod_start_appdx, max_wait, new_list_name, new_products_count):
+        max_wait = self.max_wait
+        created_products_names = self.__login_create_list_and_add_products(user_credentials, product_base_name, prod_start_appdx, max_wait, new_list_name, new_products_count)
 
+        product_row_contents = self.driver.find_elements(By.XPATH, "//table[@id='products_table_id']//tr/*")
+        change_bought_flag_button =product_row_contents[1].find_element(By.XPATH, "self::node()//input[@type='submit']")
+        
+        change_bought_flag_button.click()
+        wait = WebDriverWait(self.driver, max_wait)
+        wait.until(EC.visibility_of_element_located((By.ID, "logout_submit_button_id")))
 
+        main_page_url = self._get_url("main-page")
+        close_tab_after_done = True
+        switch_back_to_this_tab = True 
+        wait_condition = EC.visibility_of_element_located((By.ID, "page_title_id"))
+        
+        self._open_another_browser_tab(main_page_url, switch_back_to_this_tab, close_tab_after_done, wait_condition, max_wait, self._logout_user(max_wait))
+
+    def test_product_list_actions_when_logged_out(self):
+        user_idx = 0
+        list_name_gen = lambda i : (self.new_list_name + str(user_idx) + " logged out")
+        new_list_name = list_name_gen(user_idx)
+        self.__prepare_conditions_logged_out_action_on_products_list(self.users_credentials[user_idx], self.new_product_name, 0, self.max_wait, new_list_name, 2)
+        product_created_after_logout_name = "Product after logging out"
+        
+        self.driver.find_element(By.ID, "new_product_name" ).send_keys(product_created_after_logout_name)
+        self.driver.find_element(By.ID, "add_new_product_button_id").click()
+        wait = WebDriverWait(self.driver, self.max_wait)
+        wait.until(EC.visibility_of_element_located((By.ID, "page_title_id")))
+
+        expected_url = self._get_url("main-page")
+        current_url = self.driver.current_url
+
+        logout_button_located = ( len(self.driver.find_elementd(By.ID, "logout_submit_button_id") ) > 0 )
+        main_page_element_located = ( len(self.driver.find_elementd(By.ID, "login-table") ) > 0 )
+
+        this_user = UserUnified(self.users_credentials[user_idx]["login"], UserInitType.LOGIN)
+        list_user_was_using = ShoppingList.objects.filter(owner=this_user.get_normal_user()).filter(name = list_name_gen(user_idx))[0]
+
+        product_created =( len( Product.objects.filter(description=product_created_after_logout_name).filter(product_list__id = list_user_was_using.id) ) > 0 )
+
+        self.assertEquals(expected_url, current_url)
+        self.assertFalse(logout_button_located)
+        self.assertTrue(main_page_element_located)
+        self.assertFalse(product_created)

@@ -103,6 +103,12 @@ class SeleniumTestBase(StaticLiveServerTestCase):
         except:
             success_login = False
         return success_login
+    
+    def _logout_user(self, max_wait = None):
+        if max_wait is None:
+            max_wait = self.max_wait
+        self.driver.find_element(By.ID, "logout_submit_button_id").click()
+        WebDriverWait(self.driver, max_wait).until(EC.visibility_of_element_located((By.ID, "page_title_id")) )
 
     def _get_default_credentials(self):
         return self.users_credentials[0]
@@ -110,6 +116,22 @@ class SeleniumTestBase(StaticLiveServerTestCase):
     def _get_default_credentials_index(self):
         return 0
     
-
-
-
+    def _open_another_browser_tab(self, url, return_to_old_tab, close_new_tab, wait_object_condition, max_wait = None,action_new_tab = None):
+        if max_wait is None:
+            max_wait = self.max_wait
+        new_tab_idx = 1
+        old_tab_idx = 0
+        self.driver.execute_script("window.open('');") 
+        self.driver.switch_to.window(self.driver.window_handles[new_tab_idx]) 
+        self.driver.get(url)
+        wait = WebDriverWait(self.driver, max_wait)
+        wait.until(wait_object_condition)
+        if action_new_tab is not None:
+            action_new_tab()
+        if close_new_tab:
+            self.driver.close()
+            #possible that below lines need to be added - need to check
+            if new_tab_idx > old_tab_idx:
+                old_tab_idx -= 1        
+        if return_to_old_tab:
+            self.driver.switch_to_window(self.driver.window_handles[old_tab_idx])
