@@ -46,8 +46,8 @@ class SeleniumCreatingLists(SeleniumTestBase):
         this_user_credentials = self.users_credentials[0]
         max_wait=self.max_wait
         new_list_textbox_list, new_list_submit_list = self.__login_and_get_elements_to_create_new_list_inside_lists(this_user_credentials=this_user_credentials, login_the_user=True, max_wait=max_wait)
-        self.assertEquals(len(new_list_textbox_list), 1 )
-        self.assertEquals(len(new_list_submit_list), 1)
+        self.assertEqual(len(new_list_textbox_list), 1 )
+        self.assertEqual(len(new_list_submit_list), 1)
 
     def __go_back_from_list_page_to_user_profile_page(self, max_wait = 4):
         self.driver.find_element(By.XPATH, "//a[contains(text(), 'powrót')]").click()
@@ -66,7 +66,7 @@ class SeleniumCreatingLists(SeleniumTestBase):
         wait.until(EC.visibility_of_element_located((By.ID, "logout_submit_button_id")))
         lists_with_matching_name_after = ShoppingList.objects.filter(name = self.new_list_name)
         lists_with_matching_name_count_after =len(lists_with_matching_name_after)
-        self.assertEquals(lists_with_matching_name_count_before + 1, lists_with_matching_name_count_after)
+        self.assertEqual(lists_with_matching_name_count_before + 1, lists_with_matching_name_count_after)
 
 
     def test_create_new_list_the_list_is_in_user_profile_ui(self):
@@ -109,8 +109,8 @@ class SeleniumCreatingLists(SeleniumTestBase):
             if tag.tag_name == "h2" and tag.get_attribute("innerHTML") == "Moje listy":
                 start_getting_elems = True
 
-        self.assertEquals(my_list_forms_count_before + 1, my_list_forms_count_after)
-        self.assertEquals(lists_with_new_name_count_before + 1, lists_with_new_name_count_after)
+        self.assertEqual(my_list_forms_count_before + 1, my_list_forms_count_after)
+        self.assertEqual(lists_with_new_name_count_before + 1, lists_with_new_name_count_after)
         
     def test_create_new_list_new_list_page_ok(self):
         user_credentials = self._get_default_credentials()
@@ -139,14 +139,14 @@ class SeleniumCreatingLists(SeleniumTestBase):
         if account_scippet_count > 0:
             td_with_user_nick_and_hash_content = self.driver.find_element(By.XPATH, "//table[@id='account_snippet_table_id']//tr[2]/td[1]").get_attribute("innerHTML")
 
-        self.assertEquals(products_table_rows_count, 0)
-        self.assertEquals(table_editors_count, 0)
-        self.assertEquals(table_invitees_count, 0)
-        self.assertEquals(p_tag_no_editors_count, 1)
-        self.assertEquals(p_tag_no_inviteees_count, 1)
-        self.assertEquals(h2_tag__list_name_count, 1)
-        self.assertEquals(account_scippet_count, 1)
-        self.assertEquals(this_user_nick_and_hash_in_account_snippet, td_with_user_nick_and_hash_content)
+        self.assertEqual(products_table_rows_count, 0)
+        self.assertEqual(table_editors_count, 0)
+        self.assertEqual(table_invitees_count, 0)
+        self.assertEqual(p_tag_no_editors_count, 1)
+        self.assertEqual(p_tag_no_inviteees_count, 1)
+        self.assertEqual(h2_tag__list_name_count, 1)
+        self.assertEqual(account_scippet_count, 1)
+        self.assertEqual(this_user_nick_and_hash_in_account_snippet, td_with_user_nick_and_hash_content)
 
     def test_create_list_without_passing_the_name(self):
         user_credentials = self._get_default_credentials()
@@ -198,11 +198,11 @@ class SeleniumCreatingLists(SeleniumTestBase):
             if tag.tag_name == "h2" and tag.get_attribute("innerHTML") == "Moje listy":
                 start_getting_elems = True
 
-        self.assertEquals(this_users_lists_count_in_db_count_before, this_users_lists_count_in_db_count_after )
-        self.assertEquals(lists_with_new_name_count_before, lists_with_new_name_count_after)
-        self.assertEquals(my_list_forms_count_before, my_list_forms_count_after)
-        self.assertEquals(error_popup_text, expected_error_popup_text)
-        self.assertEquals(current_page_url, expected_page_url)
+        self.assertEqual(this_users_lists_count_in_db_count_before, this_users_lists_count_in_db_count_after )
+        self.assertEqual(lists_with_new_name_count_before, lists_with_new_name_count_after)
+        self.assertEqual(my_list_forms_count_before, my_list_forms_count_after)
+        self.assertEqual(error_popup_text, expected_error_popup_text)
+        self.assertEqual(current_page_url, expected_page_url)
 
     def test_create_list_logged_out(self):
         user_credentials = self._get_default_credentials()
@@ -237,11 +237,11 @@ class SeleniumCreatingLists(SeleniumTestBase):
         self.driver.close()
         self.driver.switch_to.window(self.driver.window_handles[0]) 
 
-        self.assertEquals(this_user_lists_count_before, this_user_lists_count_after)
-        self.assertEquals(login_table_count_1st_tab, 1)
-        self.assertEquals(login_table_count_2nd_tab, 1)
-        self.assertEquals(login_page_url_1st_tab, expected_url)
-        self.assertEquals(login_page_url_2nd_tab, expected_url)
+        self.assertEqual(this_user_lists_count_before, this_user_lists_count_after)
+        self.assertEqual(login_table_count_1st_tab, 1)
+        self.assertEqual(login_table_count_2nd_tab, 1)
+        self.assertEqual(login_page_url_1st_tab, expected_url)
+        self.assertEqual(login_page_url_2nd_tab, expected_url)
         
 
 

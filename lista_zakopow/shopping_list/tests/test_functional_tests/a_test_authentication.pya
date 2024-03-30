@@ -73,19 +73,19 @@ class SeleniumAuthenticationTests(SeleniumTestBase):
         expected_current_user = UserUnified(self.login_str, UserInitType.LOGIN)
         expected_url = self._get_url("user_profile_page", kwargs={"user_profile_url_txt": get_user_profile_url(expected_current_user)} )
         
-        self.assertEquals( login_textbox_count , 1)
-        self.assertEquals( pswd_1_textbox_count , 1)
-        self.assertEquals( pswd_2_textbox_count , 1)
-        self.assertEquals( email_textbox_count , 1)
-        self.assertEquals( nick_textbox_count , 1)
-        self.assertEquals( register_buttons_count , 1)
+        self.assertEqual( login_textbox_count , 1)
+        self.assertEqual( pswd_1_textbox_count , 1)
+        self.assertEqual( pswd_2_textbox_count , 1)
+        self.assertEqual( email_textbox_count , 1)
+        self.assertEqual( nick_textbox_count , 1)
+        self.assertEqual( register_buttons_count , 1)
 
         self.assertTrue(cookie_popup_button_exists)
-        self.assertEquals(account_snippet_count, 1)
+        self.assertEqual(account_snippet_count, 1)
         self.assertIsNotNone(cookie_csrf_token)
         self.assertIsNotNone(cookie_session_id)
         self.assertIsNotNone(cookie_shopping_list)
-        self.assertEquals(current_url, expected_url)
+        self.assertEqual(current_url, expected_url)
     
    
     def test_login(self):
@@ -130,14 +130,14 @@ class SeleniumAuthenticationTests(SeleniumTestBase):
         expected_url = self._get_url("user_profile_page", kwargs={"user_profile_url_txt": get_user_profile_url(expected_current_user)} )
         
         self.assertTrue(cookie_popup_button_exists)
-        self.assertEquals(account_snippet_count, 1)
+        self.assertEqual(account_snippet_count, 1)
         self.assertIsNotNone(cookie_csrf_token)
         self.assertIsNotNone(cookie_session_id)
         self.assertIsNotNone(cookie_shopping_list)
-        self.assertEquals(current_url, expected_url)
-        self.assertEquals(len(login_input_list), 1)
-        self.assertEquals(len(password_input_list), 1)
-        self.assertEquals(len(submit_button_list), 1)
+        self.assertEqual(current_url, expected_url)
+        self.assertEqual(len(login_input_list), 1)
+        self.assertEqual(len(password_input_list), 1)
+        self.assertEqual(len(submit_button_list), 1)
 
     
    

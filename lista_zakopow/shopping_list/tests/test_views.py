@@ -41,7 +41,7 @@ class TestViews(TestCase):
 
     def test_list_main_page_load(self):
         response = self.client.get(reverse("main-page"))
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed("shopping_list/index.html")
 
     def test_register(self):
@@ -52,7 +52,7 @@ class TestViews(TestCase):
                 "user_nick" : self.nick_str}
         response = self.client.post( reverse("register_user"), data )
         userrr = UserUnified(self.login_str, UserInitType.LOGIN)
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed("shopping_list/user_profile.html")
     
     def test_logout(self):
@@ -62,13 +62,13 @@ class TestViews(TestCase):
         data = {"user_hash" : user_hash}
         user_profile_url_txt = get_user_profile_url(unified_user)
         response = self.client.post(reverse("logoutuser", kwargs={"user_profile_url_txt" : user_profile_url_txt}), data)
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed("shopping_list/index.html")
 
     def test_login(self):
         self.test_logout()
         response = self.client.post(reverse("login_user"), {"user_login": self.login_str, "user_password_1": self.password_str})
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed("shopping_list/user_profile.html")
 
     def test_create_shopping_list(self):
@@ -83,7 +83,7 @@ class TestViews(TestCase):
         self.list_id = int( list_url_contents[ len(list_url_contents) -1 ] )
         #list_id = int(response.context["list_id"])
         #self.list_id =list_id
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed("shopping_list/products_list.html")
 
     def test_add_item(self):
@@ -95,8 +95,8 @@ class TestViews(TestCase):
         items_in_list_count = len(Product.objects.filter(product_list__id = list_id) )
         response = self.client.post( reverse("add_product", kwargs={ "user_profile_url_txt" : user_profile_url, "list_id" : list_id, }), data  )
         items_in_list_count_2 = len(Product.objects.filter(product_list__id = list_id) )
-        self.assertEquals(items_in_list_count + 1, items_in_list_count_2)
-        self.assertEquals(response.status_code, 302)   
+        self.assertEqual(items_in_list_count + 1, items_in_list_count_2)
+        self.assertEqual(response.status_code, 302)   
         self.assertTemplateUsed("shopping_list/products_list.html")
 
     def test_change_bought_flag(self):
@@ -111,7 +111,7 @@ class TestViews(TestCase):
         added_item = Product.objects.get(description=self.new_product_name)
         item_bought_flag_after_post = added_item.added_to_cart
         self.assertNotEquals(item_bought, item_bought_flag_after_post)
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed("shopping_list/products_list.html")
 
     def test_remove_item(self):
@@ -126,7 +126,7 @@ class TestViews(TestCase):
         items_after_remove = Product.objects.filter(description=self.new_product_name).filter(product_list__id=list_id)
         count_after_remove = len(items_after_remove)
         self.assertLess(count_after_remove, count_before_remove)
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed("shopping_list/products_list.html")
 
 
