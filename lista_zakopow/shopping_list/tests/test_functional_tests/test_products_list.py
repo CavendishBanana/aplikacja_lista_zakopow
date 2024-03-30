@@ -13,7 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from time import sleep
+#from time import sleep
 
 class SeleniumProductsListTest(SeleniumTestBase):
     
@@ -416,19 +416,23 @@ class SeleniumProductsListTest(SeleniumTestBase):
         max_wait = self.max_wait
         created_products_names = self.__login_create_list_and_add_products(user_credentials, product_base_name, prod_start_appdx, max_wait, new_list_name, new_products_count)
 
-        product_row_contents = self.driver.find_elements(By.XPATH, "//table[@id='products_table_id']//tr/*")
-        change_bought_flag_button =product_row_contents[1].find_element(By.XPATH, "self::node()//input[@type='submit']")
+        #product_row_contents = self.driver.find_elements(By.XPATH, "//table[@id='products_table_id']//tr/*")
+        #change_bought_flag_button =product_row_contents[1].find_element(By.XPATH, "self::node()//input[@type='submit']")
         
-        change_bought_flag_button.click()
-        wait = WebDriverWait(self.driver, max_wait)
-        wait.until(EC.visibility_of_element_located((By.ID, "logout_submit_button_id")))
+        #change_bought_flag_button.click()
 
-        main_page_url = self._get_url("main-page")
-        close_tab_after_done = True
-        switch_back_to_this_tab = True 
-        wait_condition = EC.visibility_of_element_located((By.ID, "page_title_id"))
+        logout_action_on_another_tab = lambda : ( self.driver.find_element(By.ID, "logout_submit_button_id" ).click() )
+        wait_condition_after_logout = EC.visibility_of_element_located((By.ID, "page_title_id"))
+        self._open_another_browser_tab(self.driver.current_url,True, True,EC.visibility_of_element_located((By.ID, "logout_submit_button_id")), max_wait, logout_action_on_another_tab, wait_condition_after_logout )
+        wait = WebDriverWait(self.driver, max_wait)
+        wait.until(EC.visibility_of_element_located((By.ID, "page_title_id")))
+
+        #main_page_url = self._get_url("main-page")
+        #close_tab_after_done = True
+        #switch_back_to_this_tab = True 
+        #wait_condition = EC.visibility_of_element_located((By.ID, "page_title_id"))
         
-        self._open_another_browser_tab(main_page_url, switch_back_to_this_tab, close_tab_after_done, wait_condition, max_wait, self._logout_user(max_wait))
+        #self._open_another_browser_tab(main_page_url, switch_back_to_this_tab, close_tab_after_done, wait_condition, max_wait, self._logout_user(max_wait))
 
     def test_product_list_actions_when_logged_out(self):
         user_idx = 0
@@ -445,8 +449,8 @@ class SeleniumProductsListTest(SeleniumTestBase):
         expected_url = self._get_url("main-page")
         current_url = self.driver.current_url
 
-        logout_button_located = ( len(self.driver.find_elementd(By.ID, "logout_submit_button_id") ) > 0 )
-        main_page_element_located = ( len(self.driver.find_elementd(By.ID, "login-table") ) > 0 )
+        logout_button_located = ( len(self.driver.find_elements(By.ID, "logout_submit_button_id") ) > 0 )
+        main_page_element_located = ( len(self.driver.find_elements(By.ID, "login-table") ) > 0 )
 
         this_user = UserUnified(self.users_credentials[user_idx]["login"], UserInitType.LOGIN)
         list_user_was_using = ShoppingList.objects.filter(owner=this_user.get_normal_user()).filter(name = list_name_gen(user_idx))[0]

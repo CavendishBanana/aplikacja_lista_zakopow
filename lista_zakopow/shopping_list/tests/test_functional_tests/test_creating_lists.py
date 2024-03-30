@@ -154,7 +154,7 @@ class SeleniumCreatingLists(SeleniumTestBase):
         new_list_name = ""
         this_user = UserUnified(user_credentials["login"], UserInitType.LOGIN)
         this_users_lists_count_in_db_count_before = len(ShoppingList.objects.filter(owner = this_user.get_normal_user()))
-
+        self._login_user(user_credentials["login"], user_credentials["password"], max_wait)
         my_list_forms_count_before = 0
         lists_with_new_name_count_before = 0
         body_contents = self.driver.find_elements(By.XPATH, "//body/*")
@@ -171,7 +171,6 @@ class SeleniumCreatingLists(SeleniumTestBase):
             if tag.tag_name == "h2" and tag.get_attribute("innerHTML") == "Moje listy":
                 start_getting_elems = True
 
-        self._login_user(user_credentials["login"], user_credentials["password"], max_wait)
         self.__login_and_create_new_list(user_credentials, new_list_name, False)
         
         wait = WebDriverWait(self.driver, max_wait)
@@ -181,7 +180,7 @@ class SeleniumCreatingLists(SeleniumTestBase):
         expected_error_popup_text = "Podaj nazwę nowej listy"
 
         current_page_url = self.driver.current_url
-        expected_page_url = self._get_url("create_new_list", kwargs={"user_profile_url_txt" : get_user_profile_url(this_user)})
+        expected_page_url = self._get_url("user_profile_page", kwargs={"user_profile_url_txt" : get_user_profile_url(this_user)})
 
         this_users_lists_count_in_db_count_after = len(ShoppingList.objects.filter(owner = this_user.get_normal_user()))
 
@@ -199,7 +198,7 @@ class SeleniumCreatingLists(SeleniumTestBase):
             if tag.tag_name == "h2" and tag.get_attribute("innerHTML") == "Moje listy":
                 start_getting_elems = True
 
-        self.assertEquals(this_users_lists_count_in_db_count_before, this_users_lists_count_in_db_count_after)
+        self.assertEquals(this_users_lists_count_in_db_count_before, this_users_lists_count_in_db_count_after )
         self.assertEquals(lists_with_new_name_count_before, lists_with_new_name_count_after)
         self.assertEquals(my_list_forms_count_before, my_list_forms_count_after)
         self.assertEquals(error_popup_text, expected_error_popup_text)
