@@ -1,0 +1,1 @@
+Simple shopping list application - user is able to create account, create their shopping lists, add, remove or mark as bought products and invite other users to edit their lists. The application has package with tests - varying from unit test to E2E tests in Selenium.
